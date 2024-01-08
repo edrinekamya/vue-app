@@ -1,0 +1,109 @@
+@import './base.css';
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  font-weight: normal;
+  display: flex;
+  flex: 1;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spaced {
+  display: flex;
+  justify-content: space-between;
+}
+
+.flex {
+  display: flex;
+  flex: 1;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+  height: 2px;
+  background-color: var(--vt-c-black-soft);
+  padding: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--vt-c-text-dark-2);
+  border-radius: 999px;
+}
+
+.main-section {
+  background: var(--bg-black-1);
+}
+
+input {
+  height: 32px;
+  padding: 0.8em 1em;
+  border: none;
+  background-color: var(--bg-black-2);
+  border-radius: var(--border-radius);
+  border-bottom: var(--section-gap) var(--vt-c-text-dark-2) solid;
+  outline: none;
+  color: var(--vt-c-text-dark-2);
+}
+
+input:focus {
+  border-bottom-color: limegreen;
+}
+
+button,
+input[type='submit'] {
+  border: none;
+  border-radius: var(--border-radius);
+  color: white;
+  height: 32px;
+  padding: 0 1em;
+  background: dodgerblue;
+}
+
+button.round {
+  border-radius: 999px;
+}
+
+button.danger {
+  background: red;
+}
+
+.list-move,
+.list-enter-active,
+.list-leave-active {
+  transform: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.list-leave-active {
+  position: absolute;
+}
+
+svg {
+  width: 20px;
+  padding: 2px;
+}
+
+svg:hover {
+  color: limegreen;
+}
