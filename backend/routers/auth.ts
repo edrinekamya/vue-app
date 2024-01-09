@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
-import { authenticateRoute, secret_key } from "../middleware";
+import { secret_key } from "../middleware";
 
 const router = Router();
 
@@ -36,17 +36,6 @@ export function auth(db: DB) {
 				});
 			}
 		}
-	});
-
-	router.put(`/`, authenticateRoute, async (req, res) => {
-		const hashedPassword = await bcrypt.hash(req.body.password, 10);
-		db.updateUser(req.user.id, hashedPassword);
-		res.status(200).send();
-	});
-
-	router.delete(`/`, authenticateRoute, async (req, res) => {
-		db.deleteUser(req.user.id);
-		res.status(200).send();
 	});
 
 	return router;

@@ -19,30 +19,6 @@ CREATE TABLE IF NOT EXISTS friends (
     CONSTRAINT test_unique UNIQUE (id)
 );
 
-CREATE TABLE IF NOT EXISTS notifications (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    userId INTEGER,
-    message TEXT NOT NULL,
-    type TEXT,
-    read BOOLEAN DEFAULT FALSE,
-    referenceId INTEGER,
-    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (userId) REFERENCES users (id)
-);
-
-CREATE TABLE IF NOT EXISTS calls (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    callerId INTEGER,
-    receiverId INTEGER,
-    startTime DATETIME DEFAULT CURRENT_TIMESTAMP,
-    endTime DATETIME,
-    status TEXT CHECK( status IN ('MISSED','ANSWERED','DECLINED') ),
-    video BOOLEAN DEFAULT FALSE,
-    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (callerId) REFERENCES users (id),
-    FOREIGN KEY (receiverId) REFERENCES users (id)
-);
-
 CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     senderId INTEGER NOT NULL,
@@ -55,23 +31,5 @@ CREATE TABLE IF NOT EXISTS messages (
     FOREIGN KEY (senderId) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (channelId) REFERENCES channels (id) ON DELETE CASCADE,
     FOREIGN KEY (chatId) REFERENCES friends (id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS channels (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT,
-    adminId INTEGER,
-    isPrivate BOOLEAN DEFAULT FALSE,
-    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (adminId) REFERENCES users (id)
-);
-
-CREATE TABLE IF NOT EXISTS channelParticipants (
-    channelId INTEGER,
-    userId INTEGER,
-    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (channelId, userId),
-    FOREIGN KEY (channelId) REFERENCES channels (id),
-    FOREIGN KEY (userId) REFERENCES users (id)
 );
 

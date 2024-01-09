@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import IDatabase from "./better-sqlite-db";
+import DatabaseWrapper from "./database";
 
 declare global {
-	type DB = IDatabase;
+	type DB = DatabaseWrapper;
 	type Middleware = (req: Request, res: Response, next: NextFunction) => any;
 	type ID = string | number;
 
@@ -11,7 +11,7 @@ declare global {
 		username: string;
 		avatar?: string;
 		createdAt: string;
-		password: string
+		password: string;
 	}
 
 	interface Friend {
@@ -22,51 +22,15 @@ declare global {
 		createdAt: string;
 	}
 
-	interface Notification {
-		id: ID;
-		userId: ID;
-		message: string;
-		type: string | null;
-		read: boolean;
-		referenceId: ID | null;
-		createdAt: string;
-	}
-
-	interface Call {
-		id: ID;
-		callerId: ID;
-		receiverId: ID;
-		startTime: string;
-		endTime: string | null;
-		status: "MISSED" | "ANSWERED" | "DECLINED" | null;
-		video: boolean;
-		createdAt: string;
-	}
-
 	interface Message {
 		id: ID;
 		senderId: ID;
 		channelId?: ID;
 		chatId?: ID;
 		message: string;
-		type: "TEXT" | "IMAGE" | "FILE" | 'REQUEST' | 'CALL';
+		type: "TEXT" | "IMAGE" | "FILE" | "REQUEST" | "CALL";
 		createdAt: string;
 		read: boolean;
-	}
-
-	interface Channel {
-		id: ID;
-		name: string;
-		adminId: ID;
-		isPrivate: boolean;
-		createdAt: string;
-		userId: string;
-	}
-
-	interface ChannelParticipant {
-		channelId: ID;
-		userId: ID;
-		createdAt: string;
 	}
 }
 

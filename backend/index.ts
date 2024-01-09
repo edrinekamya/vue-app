@@ -2,22 +2,20 @@ require("dotenv").config();
 import cors from "cors";
 import express from "express";
 import { app, io, server } from "./app";
-import IDatabase from "./better-sqlite-db";
+import DatabaseWrapper from "./database";
 import {
 	authenticateRoute,
 	authenticateSocket,
 	errorHandler,
 } from "./middleware";
 import { auth } from "./routers/auth";
-import { channels } from "./routers/channels";
 import { friends } from "./routers/friends";
-import { messages } from "./routers/messages";
 import { users } from "./routers/users";
 import "./types";
 
 const port = process.env.PORT || 5000;
 
-const db = new IDatabase();
+const db = new DatabaseWrapper();
 
 async function main() {
 	io.use(authenticateSocket);
@@ -38,10 +36,6 @@ async function main() {
 				messageId
 			);
 			db.updateMessage(messageId, "READ");
-		});
-
-		socket.on("message:typing", (to: ID, status: boolean) => {
-			io.to(String(to)).emit("message:typing", userId, status);
 		});
 
 		socket.on("chat:deleted", (to: ID) => {
@@ -68,7 +62,11 @@ async function main() {
 						socket.user
 					);
 				} else {
-					io.to(String(to)).emit("message:new", permanentMessage);
+					io.to(String(to)).emit(
+						"message:new",
+						permanentMessage,
+						socket.user.id
+					);
 				}
 			}
 		);
@@ -77,10 +75,6 @@ async function main() {
 	app.use(cors());
 
 	app.use(express.json());
-
-	app.use(`/api/messages`, messages(db));
-
-	app.use(`/api/channels`, channels(db));
 
 	app.use(`/api/friends`, friends(db));
 
