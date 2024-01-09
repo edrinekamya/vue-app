@@ -2,12 +2,11 @@ import { useAuthStore } from '@/stores/auth'
 import { useChatStore } from '@/stores/chat'
 import { useGlobalStore } from '@/stores/global'
 import AuthView from '@/views/AuthView.vue'
-import CallView from '@/views/CallView.vue'
 import ChatView from '@/views/ChatView.vue'
-import EmptyChatVue from '@/views/EmptyChat.vue'
-import FriendsView from '@/views/FriendsView.vue'
+import EmptyChat from '@/views/EmptyChatView.vue'
 import HomeView from '@/views/HomeView.vue'
 import RootView from '@/views/RootView.vue'
+import SettingsView from '@/views/SettingsView.vue'
 import SignInView from '@/views/SignInView.vue'
 import SignUpView from '@/views/SignUpView.vue'
 import WelcomeView from '@/views/WelcomeView.vue'
@@ -26,7 +25,7 @@ const router = createRouter({
           children: [
             {
               path: ``,
-              component: EmptyChatVue,
+              component: EmptyChat,
               name: 'home',
               meta: {
                 isRoot: true
@@ -39,17 +38,12 @@ const router = createRouter({
             key: 'home'
           }
         },
+
         {
-          path: `/calls`,
-          component: CallView,
-          name: 'calls'
-        },
-        {
-          path: `/requests`,
-          component: FriendsView,
+          path: `/settings`,
+          component: SettingsView,
           name: 'friends'
-        },
-        
+        }
       ],
       meta: {
         requiresAuth: true
@@ -81,6 +75,7 @@ router.beforeEach((to, from) => {
   const navigation = useGlobalStore()
   const chats = useChatStore()
 
+  // navigation guards
   if (to.meta.requiresAuth && !auth.token) {
     return `/auth/sign-in`
   }
@@ -92,8 +87,6 @@ router.beforeEach((to, from) => {
   }
   if (to.meta.isNested && to.meta.isRoot) {
     const next = navigation.navigation[to.meta.key as string]
-    console.log(next, to.fullPath)
-
     if (next && next !== to.fullPath) {
       return next
     }

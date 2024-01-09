@@ -1,23 +1,9 @@
 import { socket } from '@/socket'
 import { useInterval } from '@vueuse/core'
-import { defineStore, acceptHMRUpdate } from 'pinia'
-import { useGlobalStore } from './global'
-import { useChatStore } from './chat'
+import { acceptHMRUpdate, defineStore } from 'pinia'
+import { secondsToTimeFormat } from '../util'
 import { useAuthStore } from './auth'
-
-export function secondsToTimeFormat(seconds: number) {
-  const days = Math.floor(seconds / (3600 * 24))
-  seconds %= 3600 * 24
-  const hours = Math.floor(seconds / 3600)
-  seconds %= 3600
-  const minutes = Math.floor(seconds / 60)
-  const secs = seconds % 60
-
-  return [days, hours, minutes, secs]
-    .map((v) => (v < 10 ? '0' + v : v))
-    .filter((v, i) => v !== '00' || i > 0)
-    .join(':')
-}
+import { useChatStore } from './chat'
 
 export const useCallStore = defineStore('call', {
   state: () => ({
@@ -28,8 +14,8 @@ export const useCallStore = defineStore('call', {
     localElement: null as any,
     isVideo: false,
     status: 'connecting' as RTCPeerConnectionState,
-    peer: {} as User,
-    offer: {} as any,
+    peer: null as unknown as User,
+    offer: null as unknown as any,
     isModalOpen: false,
     isNotificationOpen: false,
     isMuted: false,
@@ -55,6 +41,8 @@ export const useCallStore = defineStore('call', {
         audio: true,
         video: this.isVideo
       })
+      this.remoteStream = new MediaStream()
+      this.remoteElement.srcObject = this.remoteStream
       this.localElement.srcObject = this.localStream
       this.localStream.getTracks().forEach((track) => this.peerConnection.addTrack(track))
     },
@@ -62,16 +50,13 @@ export const useCallStore = defineStore('call', {
     async createPeerConnection() {
       this.peerConnection = new RTCPeerConnection()
       await this.getStreams()
-
       this.peerConnection.ontrack = this.ontrack
       this.peerConnection.onicecandidate = this.onicecandidate
       this.peerConnection.onconnectionstatechange = this.onconnectionstatechange
-
-      this.remoteElement.srcObject = this.remoteStream
     },
 
     onicecandidate({ candidate }: RTCPeerConnectionIceEvent) {
-      this.sendData('icecandidate', candidate)
+      candidate && this.sendData('icecandidate', candidate)
     },
 
     onconnectionstatechange() {
@@ -91,7 +76,7 @@ export const useCallStore = defineStore('call', {
       if (!this.peerConnection) {
         this.sendData('status', 'ringing')
         // new call, open incoming call notification
-        useGlobalStore().openNotification()
+        this.isNotificationOpen = true
       } else {
         // negotiation needed simply send the answer
         this.createAndSendAnswer()
@@ -130,7 +115,7 @@ export const useCallStore = defineStore('call', {
     },
 
     addIceCandidate(candidate: any) {
-      this.peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+      this.peerConnection && this.peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
     },
 
     createAndSendOffer() {
@@ -154,10 +139,9 @@ export const useCallStore = defineStore('call', {
           this.peerConnection.onnegotiationneeded = this.createAndSendOffer
           this.isModalOpen = true
         })
-        .catch((e) => {
+        .catch(() => {
           // user denied access
           this.alert()
-          console.log(e)
         })
     },
 
@@ -183,10 +167,9 @@ export const useCallStore = defineStore('call', {
         .then(() => {
           this.isModalOpen = true
         })
-        .catch((e) => {
+        .catch(() => {
           // probably denied access to media devices
           this.alert()
-          console.log(e)
         })
         .finally(() => {
           this.isNotificationOpen = false
@@ -194,19 +177,18 @@ export const useCallStore = defineStore('call', {
     },
 
     reject() {
-      const auth = useAuthStore()
+      this.isNotificationOpen = false
       useChatStore().send(
         {
-          status: 'RECEIVED',
+          status: 'SENT',
           type: this.isVideo ? 'VIDEO-CALL' : 'VOICE-CALL',
           message: this.duration,
           senderId: this.peer.id
         },
-        auth.user.id
+        this.peer.id
       )
       this.sendData('rejected', 'rejected')
       this.offer = null
-      useGlobalStore().closeNotification()
     },
 
     sendData(type: string, data: any) {
@@ -235,7 +217,7 @@ export const useCallStore = defineStore('call', {
     },
 
     hangup() {
-      if (this.peerConnection) {
+      if (this.peer) {
         const auth = useAuthStore()
         const status = this.isInitiator
           ? !this.isCallSent
@@ -249,9 +231,10 @@ export const useCallStore = defineStore('call', {
             status,
             type: this.isVideo ? 'VIDEO-CALL' : 'VOICE-CALL',
             message: this.duration,
-            senderId: this.isInitiator ? auth.user.id : this.peer.id
+            senderId: this.isInitiator ? auth.user.id : this.peer.id,
+            createdAt: new Date().toISOString()
           },
-          this.isInitiator ? this.peer.id : auth.user.id
+          this.peer.id
         )
         this.sendData('call-ended', 'ended')
         this.close()
@@ -259,11 +242,15 @@ export const useCallStore = defineStore('call', {
     },
 
     close() {
-      useGlobalStore().closeNotification()
+      this.isNotificationOpen = false
       // Stop all tracks and end the stream
       this.localStream.getTracks().forEach((track) => {
         track.stop()
       })
+
+      this.peerConnection.removeEventListener('connectionstatechange', this.onconnectionstatechange)
+      this.peerConnection.removeEventListener('icecandidate', this.onicecandidate)
+      this.peerConnection.removeEventListener('track', this.ontrack)
 
       // Close the peer connection
       this.peerConnection && this.peerConnection.close()

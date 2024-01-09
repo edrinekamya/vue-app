@@ -8,45 +8,43 @@ defineProps<{
 </script>
 
 <template>
-  <RouterLink class="row router-link" active-class="link-active" :to="to">
-    <div></div>
-    <slot></slot>
+  <RouterLink class="flex" active-class="link-active" :to="to">
+    <button class="flex row">
+      <div></div>
+      <slot></slot>
+    </button>
   </RouterLink>
 </template>
 
 <style scoped>
-.router-link {
-  text-decoration: none;
+button {
   color: white;
   column-gap: .5em;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   padding: .5em;
   padding-left: 0;
+  background: transparent;
 }
 
-.router-link:hover {
+button:hover {
   background: rgba(255, 255, 255, 0.05);
 }
 
-.link-active,
-.link-active:hover {
+.link-active>button,
+.link-active>button:hover {
   background: rgba(255, 255, 255, 0.1);
   color: limegreen;
 }
 
-.router-link>div {
+.link-active>button>div {
+  background: limegreen;
+  height: 100%;
+}
+
+button>div {
   width: 3px;
   height: 0;
   border-radius: 1em;
   transition: height 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
-}
-
-.link-active>svg {
-  color: limegreen;
-}
-
-.link-active>div {
-  background: limegreen;
-  height: 100%;
 }
 </style>

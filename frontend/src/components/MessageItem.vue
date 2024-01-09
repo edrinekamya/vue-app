@@ -4,26 +4,32 @@ import { computed, onMounted } from 'vue';
 import TickIcon from './icons/TickIcon.vue';
 import RefreshIcon from './icons/RefreshIcon.vue';
 import CheckCircleIcon from './icons/CheckCircleIcon.vue';
-import PhoneIncomingIconVue from './icons/PhoneIncomingIcon.vue';
-import PhoneOutgoingIconVue from './icons/PhoneOutgoingIcon.vue';
+import PhoneIncomingIcon from './icons/PhoneIncomingIcon.vue';
+import PhoneOutgoingIcon from './icons/PhoneOutgoingIcon.vue';
+import PhoneMissedIcon from './icons/PhoneMissedIcon.vue';
+import VideoOnIcon from './icons/VideoOnIcon.vue';
+import PhoneIcon from './icons/PhoneIcon.vue';
 import { useChatStore } from '@/stores/chat';
+import { formatTime } from '@/util';
+import { useCallStore } from '@/stores/call';
 
 const chat = useChatStore()
+const { start } = useCallStore()
 const auth = useAuthStore()
 const props = defineProps<{ message: Message, friendId: ID }>()
-const isRight = computed(() => props.message.senderId === auth.user.id)
+const isUserSender = computed(() => props.message.senderId === auth.user.id)
 const isRead = computed(() => props.message.status === 'READ')
 const isPending = computed(() => props.message.status === 'PENDING')
 const isSent = computed(() => props.message.status === 'SENT')
-const class_ = computed(() => isRight.value ? 'right' : 'left')
+const class_ = computed(() => isUserSender.value ? 'right' : 'left')
 
-function formatTime(str: string) {
-  const date = new Date(str)
-  return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+function startCall() {
+  const friend = chat.entities[props.friendId]
+  start(friend, props.message.type === 'VIDEO-CALL')
 }
 
 onMounted(() => {
-  if (!isRead.value && !isRight.value) {
+  if (!isRead.value && !isUserSender.value && props.message.type === 'TEXT') {
     chat.read(props.friendId, props.message.id)
   }
 })
@@ -32,22 +38,29 @@ onMounted(() => {
 
 <template>
   <article v-if="message.type === 'TEXT'" class="row flex message-item" :class="class_">
-    <TickIcon v-if="isRight && isSent" />
-    <p :class="isRight ? 'sent-message' : 'received-message'">{{ message.message }}</p>
-    <RefreshIcon v-if="isRight && isPending" />
+    <TickIcon v-if="isUserSender && isSent" />
+    <p :class="isUserSender ? 'sent-message' : 'received-message'">{{ message.message }}</p>
+    <RefreshIcon v-if="isUserSender && isPending" />
     <span>{{ formatTime(message.createdAt) }}</span>
   </article>
-  <article v-else-if="message.type === 'VIDEO-CALL'" class="row flex message-item" :class="class_">
-    <p v-if="message.status === 'READ'">
-      <PhoneIncomingIconVue />
-      <PhoneOutgoingIconVue />
-    </p>
-  </article>
-  <article v-else-if="message.type === 'VOICE-CALL'" class="row flex message-item" :class="class_">
-    <p v-if="message.status === 'READ'">
-      <PhoneIncomingIconVue />
-      <PhoneOutgoingIconVue />
-    </p>
+  <article v-else-if="message.type === 'VOICE-CALL' || message.type === 'VIDEO-CALL'" class="flex message-item"
+    :class="class_">
+    <section :class="isRead ? isUserSender ? 'call-right' : 'call-left' : isUserSender ? 'missed-right' : 'missed-left'"
+      class="call column">
+      <span class="row">
+        <VideoOnIcon v-if="message.type === 'VIDEO-CALL'" />
+        <PhoneIncomingIcon v-if="!isUserSender && isRead" />
+        <PhoneOutgoingIcon v-if="isUserSender && isRead" />
+        <PhoneMissedIcon v-if="isSent" />
+        <PhoneIcon v-if="isPending" />
+        {{ isRead ? isUserSender ? 'Outgoing call' : 'Incoming call' : isPending ? 'Call Failed' : 'Missed call' }}
+      </span>
+      <span v-if="isRead">{{ message.message }}</span>
+      <button @click="startCall" v-else class="action center">
+        <PhoneIcon v-if="isPending" />{{ isUserSender ? 'Call again' : 'Call back' }}
+      </button>
+    </section>
+    <span>{{ formatTime(message.createdAt) }}</span>
   </article>
   <article v-else class="request center row">
     <CheckCircleIcon />
@@ -57,6 +70,42 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.call {
+  padding: .5em;
+  border-radius: var(--border-radius);
+}
+
+.call>button {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.missed-left {
+  background: rgb(54, 17, 17);
+}
+
+.call-right {
+  background: var(--bg-green);
+}
+
+.call-left {
+  background: var(--bg-black-2);
+}
+
+.call-right,
+.call-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.missed-right {
+  background: var(--bg-green);
+}
+
+.missed.action {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 .message-item {
   padding: .5em;
   gap: .4em;

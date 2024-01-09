@@ -4,7 +4,6 @@ import ChatItem from './ChatItem.vue';
 import { useGlobalStore } from '@/stores/global';
 import SearchModal from './SearchModal.vue';
 import NewIcon from './icons/NewIcon.vue';
-import IconButton from './IconButton.vue';
 
 const chat = useChatStore()
 const store = useGlobalStore()
@@ -16,9 +15,9 @@ const store = useGlobalStore()
     <header class="column">
       <section class="row">
         <h2>Chats</h2>
-        <IconButton @click="store.toggleSearch">
+        <button class="icon" @click="store.toggleSearch">
           <NewIcon />
-        </IconButton>
+        </button>
       </section>
       <input :disabled="!chat.chats.length" class="search-bar" placeholder="Search chats" type="text">
     </header>
@@ -30,10 +29,6 @@ const store = useGlobalStore()
 </template>
 
 <style scoped>
-.btn {
-  gap: 1em;
-}
-
 header {
   padding: 1em;
   gap: .5em;

@@ -5,7 +5,6 @@ import { storeToRefs } from 'pinia';
 import { watch } from 'vue';
 import { RouterView } from 'vue-router';
 import CallModal from './components/CallModal.vue';
-import NotificationPanel from './components/NotificationPanel.vue';
 import router from './router';
 import { useAuthStore } from './stores/auth';
 import { useCallStore } from './stores/call';
@@ -14,7 +13,7 @@ import { useChatStore } from './stores/chat';
 const chatStore = useChatStore()
 const authStore = useAuthStore()
 const callStore = useCallStore()
-const {token} = storeToRefs(authStore)
+const { token } = storeToRefs(authStore)
 
 socket.off()
 
@@ -39,5 +38,4 @@ watch(token, (newToken) => {
 <template>
   <RouterView />
   <CallModal />
-  <NotificationPanel />
 </template>

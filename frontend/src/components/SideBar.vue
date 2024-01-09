@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth';
-import IconButton from './IconButton.vue';
 import NavIcon from './NavIcon.vue';
 import ChatIconVue from './icons/ChatIcon.vue';
 import LogOutIcon from './icons/LogOutIcon.vue';
@@ -15,28 +14,27 @@ const auth = useAuthStore()
       <NavIcon to="/">
         <ChatIconVue />
       </NavIcon>
-      <NavIcon to="/requests">
-        <SettingIcon class="icon" />
+      <NavIcon to="/settings">
+        <SettingIcon />
       </NavIcon>
     </section>
-   <IconButton @click="auth.signOut">
-    <LogOutIcon />
-   </IconButton>
+    <button class="icon" @click="auth.signOut">
+      <LogOutIcon />
+    </button>
   </nav>
 </template>
 
 <style scoped>
-
 nav {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
-  padding-bottom: 1em;
-  width: 48px;
+  padding-bottom: .5em;
 }
 
 nav>section {
   display: flex;
   flex-direction: column;
   row-gap: .5em;
-}</style>
+}
+</style>

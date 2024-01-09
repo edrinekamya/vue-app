@@ -3,13 +3,13 @@ import { useCallStore } from '@/stores/call';
 import { useGlobalStore } from '@/stores/global';
 import { useDraggable } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
+import { onBeforeUnmount } from 'vue';
 import AudioSpectrum from './AudioSpectrum.vue';
 import ModalOverlay from './ModalOverlay.vue';
 import PhoneIcon from './icons/PhoneIcon.vue';
-import VideoOnIcon from './icons/VideoOnIcon.vue';
-import PhoneOutgoingIcon from './icons/PhoneOutgoingIcon.vue';
 import PhoneIncomingIcon from './icons/PhoneIncomingIcon.vue';
-import { onBeforeMount } from 'vue';
+import PhoneOutgoingIcon from './icons/PhoneOutgoingIcon.vue';
+import VideoOnIcon from './icons/VideoOnIcon.vue';
 
 const call = useCallStore()
 const notification = useGlobalStore()
@@ -31,7 +31,7 @@ function reject() {
   call.reject()
 }
 
-onBeforeMount(() => {
+onBeforeUnmount(() => {
   call.hangup()
 })
 
@@ -41,14 +41,14 @@ onBeforeMount(() => {
   <ModalOverlay :is-open="call.isModalOpen">
     <div @click.stop="null" class="column flex call">
       <section v-if="call.isVideo">
-        <video class="flex" :muted="call.isMuted" autoplay ref="remoteElement"></video>
+        <video class="full" :muted="call.isMuted" autoplay ref="remoteElement"></video>
         <video muted autoplay :style="call.isConnected ? style : {}" ref="localElement"
           :class="call.isConnected ? 'popup' : 'full'" class="local-video"></video>
         <span class="peer-name">{{ call.peer.username }}</span>
         <span class="video-status">{{ call.isConnected ? call.duration : `${call.status}...` }}</span>
       </section>
       <section v-else class="column flex center">
-        <h1 v-if="!call.isConnected">{{ call.peer.username }}</h1>
+        <h1 v-if="!call.isConnected">{{ call.peer?.username }}</h1>
         <h3 class="row">
           <PhoneOutgoingIcon v-if="call.isInitiator" />
           <PhoneIncomingIcon v-else /> {{ call.isInitiator ? 'Outgoing call' : 'Incoming call' }}
@@ -64,28 +64,27 @@ onBeforeMount(() => {
         <audio autoplay :muted="call.isMuted" ref="remoteElement"></audio>
       </section>
       <section class="row controls">
-        <button v-if="call.isConnected" @click="call.toggle">Toggle</button>
         <button class="row round danger" @click="call.hangup">
           <PhoneIcon />
         </button>
-        <button v-if="call.isConnected" @click="call.mute">Mute</button>
       </section>
-
-      <Teleport v-if="notification.slot === 'call'" to="#notification">
-        <div class="flex column notification">
-          <p class="row">
-            <VideoOnIcon v-if="call.isVideo" />
-            <PhoneIcon v-else />
-            Incoming call
-          </p>
-          <section class="column flex">
-            <h2>{{ call.peer.username }}</h2>
-          </section>
-          <section class="btn row">
-            <button class="round" @click="answer">Answer</button>
-            <button class="round danger" @click="reject">Reject</button>
-          </section>
-        </div>
+      <Teleport to="body">
+        <Transition name="slide">
+          <div v-show="call.isNotificationOpen" class="column modal">
+            <p class="row">
+              <VideoOnIcon v-if="call.isVideo" />
+              <PhoneIcon v-else />
+              Incoming call
+            </p>
+            <section class="column flex">
+              <h2>{{ call.peer?.username }}</h2>
+            </section>
+            <section class="btn row">
+              <button class="round" @click="answer">Answer</button>
+              <button class="round danger" @click="reject">Reject</button>
+            </section>
+          </div>
+        </Transition>
       </Teleport>
     </div>
   </ModalOverlay>
@@ -99,6 +98,19 @@ onBeforeMount(() => {
   padding: .2em .5em;
   border-radius: .2em;
   z-index: 2;
+}
+
+.modal {
+  position: absolute;
+  min-width: 40vw;
+  height: auto;
+  z-index: 99;
+  display: flex;
+  bottom: 1em;
+  right: 1em;
+  overflow: auto;
+  gap: .5em;
+  background: var(--bg-black-3);
 }
 
 button>svg {
@@ -128,12 +140,6 @@ button.round {
   bottom: 1em;
 }
 
-.notification {
-  flex: 1;
-  display: flex;
-  gap: .5em;
-}
-
 .call {
   background: rgb(30, 30, 30);
 }
@@ -158,6 +164,11 @@ h2 {
   padding: 1em;
   border-radius: 999px;
   justify-content: center;
+  position: absolute;
+  z-index: 10;
+  bottom: 2em;
+  left: 0;
+  right: 0;
 }
 
 .center {
