@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { useChatStore } from '@/stores/chat';
-import ChatItem from './ChatItem.vue';
-import { useGlobalStore } from '@/stores/global';
-import SearchModal from './SearchModal.vue';
-import NewIcon from './icons/NewIcon.vue';
+import { useChatStore } from '@/stores/chat'
+import ChatItem from './ChatItem.vue'
+import { useGlobalStore } from '@/stores/global'
+import SearchModal from './SearchModal.vue'
+import NewIcon from './icons/NewIcon.vue'
 
 const chat = useChatStore()
 const store = useGlobalStore()
-
 </script>
 
 <template>
@@ -19,7 +18,12 @@ const store = useGlobalStore()
           <NewIcon />
         </button>
       </section>
-      <input :disabled="!chat.chats.length" class="search-bar" placeholder="Search chats" type="text">
+      <input
+        :disabled="!chat.chats.length"
+        class="search-bar"
+        placeholder="Search chats"
+        type="text"
+      />
     </header>
     <nav class="column">
       <ChatItem v-for="item in chat.chats" :chat="item" :key="item.id" />
@@ -31,7 +35,7 @@ const store = useGlobalStore()
 <style scoped>
 header {
   padding: 1em;
-  gap: .5em;
+  gap: 0.5em;
 }
 
 .chat-list {
@@ -42,13 +46,13 @@ header {
   background-color: var(--bg-black-1);
 }
 
-header>section {
+header > section {
   justify-content: space-between;
 }
 
 nav {
   overflow: auto;
-  gap: .5em;
-  padding: 0 .5em;
+  gap: 0.5em;
+  padding: 0 0.5em;
 }
 </style>

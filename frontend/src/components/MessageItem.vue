@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/auth';
-import { computed, onMounted } from 'vue';
-import TickIcon from './icons/TickIcon.vue';
-import RefreshIcon from './icons/RefreshIcon.vue';
-import CheckCircleIcon from './icons/CheckCircleIcon.vue';
-import PhoneIncomingIcon from './icons/PhoneIncomingIcon.vue';
-import PhoneOutgoingIcon from './icons/PhoneOutgoingIcon.vue';
-import PhoneMissedIcon from './icons/PhoneMissedIcon.vue';
-import VideoOnIcon from './icons/VideoOnIcon.vue';
-import PhoneIcon from './icons/PhoneIcon.vue';
-import { useChatStore } from '@/stores/chat';
-import { formatTime } from '@/util';
-import { useCallStore } from '@/stores/call';
+import { useAuthStore } from '@/stores/auth'
+import { computed, onMounted } from 'vue'
+import TickIcon from './icons/TickIcon.vue'
+import RefreshIcon from './icons/RefreshIcon.vue'
+import CheckCircleIcon from './icons/CheckCircleIcon.vue'
+import PhoneIncomingIcon from './icons/PhoneIncomingIcon.vue'
+import PhoneOutgoingIcon from './icons/PhoneOutgoingIcon.vue'
+import PhoneMissedIcon from './icons/PhoneMissedIcon.vue'
+import VideoOnIcon from './icons/VideoOnIcon.vue'
+import PhoneIcon from './icons/PhoneIcon.vue'
+import { useChatStore } from '@/stores/chat'
+import { formatTime } from '@/util'
+import { useCallStore } from '@/stores/call'
 
 const chat = useChatStore()
 const { start } = useCallStore()
 const auth = useAuthStore()
-const props = defineProps<{ message: Message, friendId: ID }>()
+const props = defineProps<{ message: Message; friendId: ID }>()
 const isUserSender = computed(() => props.message.senderId === auth.user.id)
 const isRead = computed(() => props.message.status === 'READ')
 const isPending = computed(() => props.message.status === 'PENDING')
 const isSent = computed(() => props.message.status === 'SENT')
-const class_ = computed(() => isUserSender.value ? 'right' : 'left')
+const class_ = computed(() => (isUserSender.value ? 'right' : 'left'))
 
 function startCall() {
   const friend = chat.entities[props.friendId]
@@ -33,7 +33,6 @@ onMounted(() => {
     chat.read(props.friendId, props.message.id)
   }
 })
-
 </script>
 
 <template>
@@ -43,17 +42,38 @@ onMounted(() => {
     <RefreshIcon v-if="isUserSender && isPending" />
     <span>{{ formatTime(message.createdAt) }}</span>
   </article>
-  <article v-else-if="message.type === 'VOICE-CALL' || message.type === 'VIDEO-CALL'" class="flex message-item"
-    :class="class_">
-    <section :class="isRead ? isUserSender ? 'call-right' : 'call-left' : isUserSender ? 'missed-right' : 'missed-left'"
-      class="call column">
+  <article
+    v-else-if="message.type === 'VOICE-CALL' || message.type === 'VIDEO-CALL'"
+    class="flex message-item"
+    :class="class_"
+  >
+    <section
+      :class="
+        isRead
+          ? isUserSender
+            ? 'call-right'
+            : 'call-left'
+          : isUserSender
+            ? 'missed-right'
+            : 'missed-left'
+      "
+      class="call column"
+    >
       <span class="row">
         <VideoOnIcon v-if="message.type === 'VIDEO-CALL'" />
         <PhoneIncomingIcon v-if="!isUserSender && isRead" />
         <PhoneOutgoingIcon v-if="isUserSender && isRead" />
         <PhoneMissedIcon v-if="isSent" />
         <PhoneIcon v-if="isPending" />
-        {{ isRead ? isUserSender ? 'Outgoing call' : 'Incoming call' : isPending ? 'Call Failed' : 'Missed call' }}
+        {{
+          isRead
+            ? isUserSender
+              ? 'Outgoing call'
+              : 'Incoming call'
+            : isPending
+              ? 'Call Failed'
+              : 'Missed call'
+        }}
       </span>
       <span v-if="isRead">{{ message.message }}</span>
       <button @click="startCall" v-else class="action center">
@@ -71,11 +91,11 @@ onMounted(() => {
 
 <style scoped>
 .call {
-  padding: .5em;
+  padding: 0.5em;
   border-radius: var(--border-radius);
 }
 
-.call>button {
+.call > button {
   background: rgba(255, 255, 255, 0.1);
 }
 
@@ -107,25 +127,25 @@ onMounted(() => {
 }
 
 .message-item {
-  padding: .5em;
-  gap: .4em;
+  padding: 0.5em;
+  gap: 0.4em;
   align-items: flex-end;
 }
 
 .request {
   font-size: 12px;
-  gap: .5em;
+  gap: 0.5em;
   align-items: flex-end;
   margin-bottom: 4em;
 }
 
-.request>p {
+.request > p {
   border-radius: 2em;
 }
 
 p {
   background: var(--bg-black-2);
-  padding: .5em;
+  padding: 0.5em;
   border-radius: var(--border-radius);
   word-wrap: break-word;
   word-break: break-all;
@@ -135,14 +155,12 @@ p {
   flex-direction: row-reverse;
 }
 
-
 .sent-message {
   background: var(--bg-green);
-
 }
 
-article>section {
-  gap: .5em;
+article > section {
+  gap: 0.5em;
 }
 
 span {

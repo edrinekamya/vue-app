@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/auth';
-import { useTimeAgo } from '@vueuse/core';
-import { computed } from 'vue';
-import CheckCircleIcon from './icons/CheckCircleIcon.vue';
-import NewIcon from './icons/NewIcon.vue';
-import PhoneIcon from './icons/PhoneIcon.vue';
-import PhoneIncomingIcon from './icons/PhoneIncomingIcon.vue';
-import PhoneMissedIcon from './icons/PhoneMissedIcon.vue';
-import PhoneOutgoingIcon from './icons/PhoneOutgoingIcon.vue';
-import TickIcon from './icons/TickIcon.vue';
-import VideoOnIcon from './icons/VideoOnIcon.vue';
-import RefreshIcon from './icons/RefreshIcon.vue';
+import { useAuthStore } from '@/stores/auth'
+import { useTimeAgo } from '@vueuse/core'
+import { computed } from 'vue'
+import CheckCircleIcon from './icons/CheckCircleIcon.vue'
+import NewIcon from './icons/NewIcon.vue'
+import PhoneIcon from './icons/PhoneIcon.vue'
+import PhoneIncomingIcon from './icons/PhoneIncomingIcon.vue'
+import PhoneMissedIcon from './icons/PhoneMissedIcon.vue'
+import PhoneOutgoingIcon from './icons/PhoneOutgoingIcon.vue'
+import TickIcon from './icons/TickIcon.vue'
+import VideoOnIcon from './icons/VideoOnIcon.vue'
+import RefreshIcon from './icons/RefreshIcon.vue'
 
 const props = defineProps<{
   chat: Chat
@@ -24,7 +24,6 @@ const isUserSender = computed(() => message.value.senderId === auth.user.id)
 const isRead = computed(() => message.value.status === 'READ')
 const isPending = computed(() => message.value.status === 'PENDING')
 const isSent = computed(() => message.value.status === 'SENT')
-
 </script>
 <template>
   <RouterLink class="no-underline" active-class="active-link" :to="`/chat/${chat.id}`">
@@ -38,14 +37,18 @@ const isSent = computed(() => message.value.status === 'SENT')
     <p v-else-if="message.type === 'REQUEST' && isUserSender">
       <NewIcon v-if="isSent" />
       <CheckCircleIcon v-if="isRead" />
-      {{ message.status === 'PENDING' ? 'Pending message request' : isSent ? 'Message request sent' :
-        'Message request accepted' }}
+      {{
+        message.status === 'PENDING'
+          ? 'Pending message request'
+          : isSent
+            ? 'Message request sent'
+            : 'Message request accepted'
+      }}
     </p>
     <p v-else-if="message.type === 'REQUEST' && !isUserSender">
       <NewIcon v-if="isSent" />
       <CheckCircleIcon v-if="isRead" />
-      {{ isSent ? 'New message request' :
-        'Message request accepted' }}
+      {{ isSent ? 'New message request' : 'Message request accepted' }}
     </p>
     <p v-else>
       <VideoOnIcon v-if="message.type === 'VIDEO-CALL'" />
@@ -53,7 +56,15 @@ const isSent = computed(() => message.value.status === 'SENT')
       <PhoneOutgoingIcon v-if="isUserSender && isRead" />
       <PhoneMissedIcon v-if="isSent" />
       <PhoneIcon v-if="isPending" />
-      {{ isRead ? isUserSender ? 'Outgoing call' : 'Incoming call' : isPending ? 'Call Failed' : 'Missed call' }}
+      {{
+        isRead
+          ? isUserSender
+            ? 'Outgoing call'
+            : 'Incoming call'
+          : isPending
+            ? 'Call Failed'
+            : 'Missed call'
+      }}
     </p>
   </RouterLink>
 </template>
@@ -72,11 +83,10 @@ p {
 
 .no-underline {
   text-decoration: none;
-  padding: .5em;
+  padding: 0.5em;
   color: var(--text);
   display: grid;
   grid-template-columns: 1fr auto;
-
 }
 
 span {
@@ -111,6 +121,5 @@ span {
 .count {
   background: green;
   align-self: center;
-
 }
 </style>

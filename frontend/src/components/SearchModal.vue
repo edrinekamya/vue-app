@@ -1,9 +1,9 @@
-<script setup lang='ts'>
-import { useChatStore } from '@/stores/chat';
-import { useGlobalStore } from '@/stores/global';
-import { ref, watchEffect } from 'vue';
-import ModalOverlay from './ModalOverlay.vue';
-import { mande } from 'mande';
+<script setup lang="ts">
+import { useChatStore } from '@/stores/chat'
+import { useGlobalStore } from '@/stores/global'
+import { ref, watchEffect } from 'vue'
+import ModalOverlay from './ModalOverlay.vue'
+import { mande } from 'mande'
 
 const api = mande('/api/users')
 
@@ -26,10 +26,14 @@ const isLoading = ref(false)
 
 function sendRequest(user: User, index: number) {
   isLoading.value = true
-  chat.send({
-    type: 'REQUEST',
-    message: `Message request`
-  }, user.id, user)
+  chat.send(
+    {
+      type: 'REQUEST',
+      message: `Message request`
+    },
+    user.id,
+    user
+  )
   results.value.splice(index, 1)
   isLoading.value = false
 }
@@ -40,7 +44,13 @@ function sendRequest(user: User, index: number) {
     <div @click.stop="null" class="search-modal column">
       <section class="column">
         <h2>Find friends</h2>
-        <input :disabled="isLoading" class="search-bar" placeholder="Search for new friends" v-model="query" type="text">
+        <input
+          :disabled="isLoading"
+          class="search-bar"
+          placeholder="Search for new friends"
+          v-model="query"
+          type="text"
+        />
       </section>
       <TransitionGroup name="list">
         <article class="row spaced" v-for="(user, i) in results" :key="user.id">
@@ -58,7 +68,7 @@ function sendRequest(user: User, index: number) {
   padding: 1em;
   gap: 1em;
   background: var(--bg-black-2);
-  border-radius: .5em;
+  border-radius: 0.5em;
   width: 60vh;
   align-self: flex-start;
 }
@@ -72,12 +82,12 @@ article {
   border-radius: var(--border-radius);
 }
 
-article>button {
+article > button {
   display: none;
   background: limegreen;
   border: none;
   color: white;
-  padding: .5em 1em;
+  padding: 0.5em 1em;
   border-radius: var(--border-radius);
 }
 
@@ -89,7 +99,7 @@ article:hover {
   background: var(--bg-black-3);
 }
 
-article:hover>button {
+article:hover > button {
   display: inline;
 }
 </style>

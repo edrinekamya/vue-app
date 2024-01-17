@@ -39,7 +39,8 @@
 
   --section-gap: 2px;
   --border-radius: 4px;
-  --padding: 2em
+  --padding: 2em;
+  --break-point-small: 480px;
 }
 
 @media (prefers-color-scheme: dark) {

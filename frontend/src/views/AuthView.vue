@@ -29,10 +29,9 @@ main,
 footer {
   display: flex;
   justify-content: center;
-
 }
 
-footer >p {
+footer > p {
   padding: 1em;
   font-size: 12px;
 }

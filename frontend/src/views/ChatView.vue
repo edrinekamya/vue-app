@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import MessageItem from '@/components/MessageItem.vue';
-import PhoneIcon from '@/components/icons/PhoneIcon.vue';
-import SendIcon from '@/components/icons/SendIcon.vue';
-import VideoOnIcon from '@/components/icons/VideoOnIcon.vue';
-import { useAuthStore } from '@/stores/auth';
-import { useCallStore } from '@/stores/call';
-import { useChatStore } from '@/stores/chat';
-import { useGlobalStore } from '@/stores/global';
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import MessageItem from '@/components/MessageItem.vue'
+import PhoneIcon from '@/components/icons/PhoneIcon.vue'
+import SendIcon from '@/components/icons/SendIcon.vue'
+import VideoOnIcon from '@/components/icons/VideoOnIcon.vue'
+import { useAuthStore } from '@/stores/auth'
+import { useCallStore } from '@/stores/call'
+import { useChatStore } from '@/stores/chat'
+import { useGlobalStore } from '@/stores/global'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const store = useChatStore()
 const route = useRoute()
@@ -28,42 +28,51 @@ const isUserSender = computed(() => request.value.senderId === auth.user.id)
 
 const bottom = ref<HTMLElement | null>(null)
 
-
-watch(friend, (newFriend) => {
-  if (!newFriend) {
-    state.deletePath(route.fullPath)
-    router.push(`/`)
+watch(
+  friend,
+  (newFriend) => {
+    if (!newFriend) {
+      state.deletePath(route.fullPath)
+      router.push(`/`)
+    }
+  },
+  {
+    immediate: true
   }
-}, {
-  immediate: true
-})
+)
 
 function sendText() {
   if (text.value) {
     store.send({ message: text.value, type: 'TEXT' }, friend.value.id)
     text.value = ''
   }
-
 }
 
 onMounted(() => {
   bottom.value?.scrollIntoView({ behavior: 'instant' })
 })
 
-watch(messages, () => {
-  nextTick(() => {
-    bottom.value?.scrollIntoView({ behavior: 'smooth' })
-  })
-}, { immediate: true })
+watch(
+  messages,
+  () => {
+    nextTick(() => {
+      bottom.value?.scrollIntoView({ behavior: 'smooth' })
+    })
+  },
+  { immediate: true }
+)
 
 function resendRequest() {
   const { id, username, createdAt } = friend.value
-  store.send({
-    type: 'REQUEST',
-    message: `Message request`
-  }, id, { id, username, createdAt })
+  store.send(
+    {
+      type: 'REQUEST',
+      message: `Message request`
+    },
+    id,
+    { id, username, createdAt }
+  )
 }
-
 </script>
 
 <template>
@@ -81,21 +90,44 @@ function resendRequest() {
     </header>
     <TransitionGroup name="list" v-if="isRequestAccepted">
       <section class="column message-list">
-        <MessageItem :friend-id="friend.id" v-for="message in messages" :key="message.id" :message="message" />
+        <MessageItem
+          :friend-id="friend.id"
+          v-for="message in messages"
+          :key="message.id"
+          :message="message"
+        />
         <b ref="bottom"></b>
       </section>
     </TransitionGroup>
     <div v-else class="flex center">
       <section class="column">
-        <h3>{{ isUserSender ? isRequestPending ? 'Request not sent' : 'Request sent' : 'New message request' }}</h3>
-        <p>{{ isUserSender ? isRequestPending ? `Before resending please check your internet connection` : `To promote
+        <h3>
+          {{
+            isUserSender
+              ? isRequestPending
+                ? 'Request not sent'
+                : 'Request sent'
+              : 'New message request'
+          }}
+        </h3>
+        <p>
+          {{
+            isUserSender
+              ? isRequestPending
+                ? `Before resending please check your internet connection`
+                : `To promote
           privacy, you can only chat with new people after they accept your message
-          request` : `Accept the request and start chatting or ignore the request if you're not interested` }}</p>
+          request`
+              : `Accept the request and start chatting or ignore the request if you're not interested`
+          }}
+        </p>
         <section v-if="isRequestPending" class="center row">
           <button @click="resendRequest">Resend</button>
           <button class="danger" @click="store.delete(friend.id, true)">Cancel</button>
         </section>
-        <button v-else-if="isUserSender" class="danger" @click="store.delete(friend.id)">Cancel Request</button>
+        <button v-else-if="isUserSender" class="danger" @click="store.delete(friend.id)">
+          Cancel Request
+        </button>
         <section v-else class="center row">
           <button @click="store.read(friend.id, messages[0].id)">Accept</button>
           <button class="danger" @click="store.delete(friend.id)">Ignore</button>
@@ -113,10 +145,10 @@ function resendRequest() {
 
 <style scoped>
 footer {
-  column-gap: .5em;
+  column-gap: 0.5em;
 }
 
-footer>button {
+footer > button {
   background: var(--bg-green);
 }
 
@@ -139,10 +171,10 @@ header,
 footer,
 .message-list {
   background-color: var(--bg-black-1);
-  padding: .5em;
+  padding: 0.5em;
 }
 
-section>div {
+section > div {
   padding: 1em;
 }
 
@@ -155,12 +187,11 @@ p {
   text-align: center;
 }
 
-section>h3 {
+section > h3 {
   text-transform: capitalize;
-
 }
 
-section>p {
+section > p {
   font-size: 12px;
 }
 
@@ -174,7 +205,7 @@ input {
 
 .message-list {
   flex: 1;
-  row-gap: .5em;
+  row-gap: 0.5em;
   overflow: auto;
 }
 

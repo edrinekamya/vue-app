@@ -4,7 +4,6 @@ defineProps<{
 }>()
 
 defineEmits(['close'])
-
 </script>
 
 <template>
@@ -17,8 +16,8 @@ defineEmits(['close'])
   </Teleport>
 </template>
 <style scoped>
-
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: all 0.1s ease;
 }
 

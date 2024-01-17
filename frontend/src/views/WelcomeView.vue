@@ -2,9 +2,7 @@
   <div class="column greetings">
     <h1 class="green">VueApp</h1>
     <h2>Welcome to VueApp</h2>
-    <h3>
-      Connect with your friends and family instantly!
-    </h3>
+    <h3>Connect with your friends and family instantly!</h3>
     <section class="row">
       <RouterLink to="/auth/sign-in">
         <button class="sign-in">Sign In</button>
@@ -20,7 +18,7 @@
 div {
   align-items: center;
   justify-content: center;
-  gap: .5em;
+  gap: 0.5em;
 }
 
 h1,
@@ -30,7 +28,7 @@ h3 {
 }
 
 .row {
-  gap: .5em;
+  gap: 0.5em;
 }
 
 h3 {
@@ -43,4 +41,5 @@ h3 {
 
 .sign-in {
   background: limegreen;
-}</style>
+}
+</style>

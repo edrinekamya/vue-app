@@ -115,10 +115,6 @@ svg {
   padding: 2px;
 }
 
-svg:hover {
-  color: limegreen;
-}
-
 .icon {
   justify-content: center;
   align-items: center;

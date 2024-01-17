@@ -1,15 +1,15 @@
-<script setup lang='ts'>
-import { useCallStore } from '@/stores/call';
-import { useGlobalStore } from '@/stores/global';
-import { useDraggable } from '@vueuse/core';
-import { storeToRefs } from 'pinia';
-import { onBeforeUnmount } from 'vue';
-import AudioSpectrum from './AudioSpectrum.vue';
-import ModalOverlay from './ModalOverlay.vue';
-import PhoneIcon from './icons/PhoneIcon.vue';
-import PhoneIncomingIcon from './icons/PhoneIncomingIcon.vue';
-import PhoneOutgoingIcon from './icons/PhoneOutgoingIcon.vue';
-import VideoOnIcon from './icons/VideoOnIcon.vue';
+<script setup lang="ts">
+import { useCallStore } from '@/stores/call'
+import { useGlobalStore } from '@/stores/global'
+import { useDraggable } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
+import { onBeforeUnmount } from 'vue'
+import AudioSpectrum from './AudioSpectrum.vue'
+import ModalOverlay from './ModalOverlay.vue'
+import PhoneIcon from './icons/PhoneIcon.vue'
+import PhoneIncomingIcon from './icons/PhoneIncomingIcon.vue'
+import PhoneOutgoingIcon from './icons/PhoneOutgoingIcon.vue'
+import VideoOnIcon from './icons/VideoOnIcon.vue'
 
 const call = useCallStore()
 const notification = useGlobalStore()
@@ -34,7 +34,6 @@ function reject() {
 onBeforeUnmount(() => {
   call.hangup()
 })
-
 </script>
 
 <template>
@@ -42,20 +41,26 @@ onBeforeUnmount(() => {
     <div @click.stop="null" class="column flex call">
       <section v-if="call.isVideo">
         <video class="full" :muted="call.isMuted" autoplay ref="remoteElement"></video>
-        <video muted autoplay :style="call.isConnected ? style : {}" ref="localElement"
-          :class="call.isConnected ? 'popup' : 'full'" class="local-video"></video>
+        <video
+          muted
+          autoplay
+          :style="call.isConnected ? style : {}"
+          ref="localElement"
+          :class="call.isConnected ? 'popup' : 'full'"
+          class="local-video"
+        ></video>
         <span class="peer-name">{{ call.peer.username }}</span>
-        <span class="video-status">{{ call.isConnected ? call.duration : `${call.status}...` }}</span>
+        <span class="video-status">{{
+          call.isConnected ? call.duration : `${call.status}...`
+        }}</span>
       </section>
       <section v-else class="column flex center">
-        <h1 v-if="!call.isConnected">{{ call.peer?.username }}</h1>
+        <h1>{{ call.peer?.username }}</h1>
         <h3 class="row">
           <PhoneOutgoingIcon v-if="call.isInitiator" />
-          <PhoneIncomingIcon v-else /> {{ call.isInitiator ? 'Outgoing call' : 'Incoming call' }}
+          <PhoneIncomingIcon v-else /> Voice call
         </h3>
-        <p v-if="!call.isConnected">
-          {{ call.status }}...
-        </p>
+        <p v-if="!call.isConnected">{{ call.status }}...</p>
         <section class="column center" v-else>
           <span>{{ call.duration }}</span>
           <AudioSpectrum />
@@ -95,8 +100,8 @@ onBeforeUnmount(() => {
 .peer-name {
   position: absolute;
   background: var(--bg-black-2);
-  padding: .2em .5em;
-  border-radius: .2em;
+  padding: 0.2em 0.5em;
+  border-radius: 0.2em;
   z-index: 2;
 }
 
@@ -109,11 +114,12 @@ onBeforeUnmount(() => {
   bottom: 1em;
   right: 1em;
   overflow: auto;
-  gap: .5em;
-  background: var(--bg-black-3);
+  gap: 0.5em;
+  padding: 0.5em;
+  background: var(--bg-black-2);
 }
 
-button>svg {
+button > svg {
   width: 32px;
 }
 
@@ -123,10 +129,10 @@ button.round {
 }
 
 .btn {
-  gap: .5em;
+  gap: 0.5em;
 }
 
-.btn>button {
+.btn > button {
   flex: 1;
 }
 
@@ -160,7 +166,7 @@ h2 {
 }
 
 .controls {
-  column-gap: .5em;
+  column-gap: 0.5em;
   padding: 1em;
   border-radius: 999px;
   justify-content: center;
@@ -172,7 +178,7 @@ h2 {
 }
 
 .center {
-  gap: .5em;
+  gap: 0.5em;
 }
 
 video {
@@ -187,14 +193,14 @@ video {
 }
 
 .full {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   top: 0;
-  right: 0
+  right: 0;
 }
 
 .popup {
-  width: 40vw;
-  height: 40vh;
+  width: 30vw;
+  height: 30vh;
 }
 </style>
