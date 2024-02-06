@@ -7,7 +7,7 @@ const router = Router();
 
 export function auth(db: DB) {
 	router.post(`/sign-in`, async (req, res) => {
-		const result = db.getUser(req.body.username);
+		const result = db.getUser(req.body.username.trim().toLowerCase());
 		if (!result) {
 			res.status(401).send({ error: "Account does not exist" });
 		} else if (await bcrypt.compare(req.body.password, result.password)) {
@@ -25,7 +25,10 @@ export function auth(db: DB) {
 	router.post(`/sign-up`, async (req, res) => {
 		try {
 			const hashedPassword = await bcrypt.hash(req.body.password, 10);
-			db.createUser(req.body.username, hashedPassword);
+			db.createUser(
+				req.body.username.trim().toLowerCase(),
+				hashedPassword
+			);
 			res.status(201).json();
 		} catch (error: any) {
 			if (error?.code === "SQLITE_CONSTRAINT_UNIQUE") {

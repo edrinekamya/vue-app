@@ -88,17 +88,17 @@ function resendRequest() {
         </button>
       </section>
     </header>
-    <TransitionGroup name="list" v-if="isRequestAccepted">
-      <section class="column message-list">
-        <MessageItem
-          :friend-id="friend.id"
-          v-for="message in messages"
-          :key="message.id"
-          :message="message"
-        />
-        <b ref="bottom"></b>
-      </section>
-    </TransitionGroup>
+    <section v-if="isRequestAccepted" class="flex column message-list">
+      <MessageItem :friend-id="friend.id" :message="messages[0]" />
+      <div class="flex"></div>
+      <MessageItem
+        :friend-id="friend.id"
+        v-for="message in messages.slice(1)"
+        :key="message.id"
+        :message="message"
+      />
+      <b ref="bottom"></b>
+    </section>
     <div v-else class="flex center">
       <section class="column">
         <h3>
@@ -156,7 +156,9 @@ textarea {
   background: transparent;
   border: none;
   outline: none;
-  color: wheat;
+  color: white;
+  font-family: inherit;
+  padding: 8px;
 }
 
 button {

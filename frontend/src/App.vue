@@ -29,6 +29,7 @@ watch(
       callStore.bindEvents()
       socket.connect()
     } else {
+      socket.disconnect()
       router.replace('/auth')
     }
   },

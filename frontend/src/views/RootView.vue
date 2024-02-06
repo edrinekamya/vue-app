@@ -13,7 +13,7 @@ const auth = useAuthStore()
     <header class="row spaced">
       <section class="row">
         <AppLogo size="24" />
-        <h1>{{ auth.user.username }}</h1>
+        <h1>{{ auth.user?.username }}</h1>
       </section>
       <button class="icon" @click="auth.signOut">Logout</button>
     </header>

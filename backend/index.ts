@@ -47,7 +47,6 @@ async function main() {
 			"message:create",
 			(message: Message, to: ID, callback: Function) => {
 				if (message.type === "REQUEST") {
-					console.log(message);
 					try {
 						db.createFriend(socket.user.id, to, "FRIEND");
 					} catch (e) {}

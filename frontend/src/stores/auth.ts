@@ -1,5 +1,5 @@
 import router from '@/router'
-import { useStorage } from '@vueuse/core'
+import { useSessionStorage } from '@vueuse/core'
 import { mande } from 'mande'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 
@@ -12,7 +12,7 @@ export interface Credential {
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    credentials: useStorage('pinia/auth/credential', {} as Credential),
+    credentials: useSessionStorage('pinia/auth/credential', {} as Credential),
     isLoading: true,
     errorMessage: ''
   }),
@@ -52,7 +52,11 @@ export const useAuthStore = defineStore('auth', {
     },
 
     signOut() {
-      this.credentials = {} as Credential
+      this.credentials = {
+        user: {},
+        token: ''
+      } as Credential
+      this.$reset()
     }
   }
 })
